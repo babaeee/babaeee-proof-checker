@@ -1,6 +1,8 @@
 import { dragOnClick } from "./dragndrop.mjs";
 
 const ftc = async (body) => {
+  const waitingLabel = document.getElementById('wait-label');
+  waitingLabel.innerText = 'در انتظار سرور ...';
   const res = await fetch("/api", {
     method: 'POST',
     headers: {
@@ -8,6 +10,7 @@ const ftc = async (body) => {
     },
     body: JSON.stringify(body),
   });
+  waitingLabel.innerText = '';
   return res.json();
 };
 
