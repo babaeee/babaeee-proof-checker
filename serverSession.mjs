@@ -95,7 +95,7 @@ export const Session = class {
   async setGoal({ pallete, goal, context }) {
     await this.cleanCache();
     await this.writeStdin(context);
-    await this.cleanCache(2000);
+    await this.cleanCache(5000);
     await this.writeStdin(`Goal (${goal}).`);
     await this.sendTactic('normalize');
     this.pallete = [];
