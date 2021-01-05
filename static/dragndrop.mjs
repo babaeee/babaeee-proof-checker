@@ -24,7 +24,9 @@ export const dragOnClick = (e) => () => {
   } else {
     state = 'drag';
     dom.innerText = '';
-    dragHandler(draggedItem, e, shiftHolded);
+    const sh = shiftHolded;
+    shiftHolded = false;
+    dragHandler(draggedItem, e, sh);
   }
 };
 
