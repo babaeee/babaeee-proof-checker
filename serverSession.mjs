@@ -8,10 +8,13 @@ export const Session = class {
     this.state = 'init';
     this.cache = '';
     this.cacheErr = '';
+    this.statement = '';
     this.goal = {};
     this.pallete = [];
     this.process.stdout.on('data', (data) => {
+      console.log(`data: ${data}`);
       this.cache += data;
+      console.log(`cache lenght: ${this.cache.length}`);
     });
     this.process.stderr.on('data', (data) => {
       this.cacheErr += data;
@@ -22,10 +25,11 @@ export const Session = class {
     this.process.stdin.write(x + '\n');
   }
 
-  async getStdoutValue() {
-    await delay(200);
+  async getStdoutValue(x = 200) {
+    await delay(x);
     const v = this.cache;
     this.cache = '';
+    console.log(`cache sended: ${v}`);
     return v;
   }
 
@@ -38,6 +42,7 @@ export const Session = class {
 
   async cleanCache(x = 10) {
     await delay(x);
+    console.log('cleared');
     this.cache = '';
     this.cacheErr = '';
   }
@@ -48,6 +53,7 @@ export const Session = class {
       const err = await this.getStderrValue();
       throw new Error(err);
     }
+    console.log(so);
     const y = so.split('\n').map((a)=>a.trim());
     const hyps = [];
     const goals = [];
@@ -92,15 +98,21 @@ export const Session = class {
     }
   };
 
-  async setGoal({ pallete, goal, context }) {
+  async setGoal({ pallete = {}, goal, context, statement }) {
     await this.cleanCache();
     await this.writeStdin(context);
     await this.cleanCache(5000);
     await this.writeStdin(`Goal (${goal}).`);
+    await this.getGoal();
     await this.sendTactic('normalize');
+    this.statement = statement;
     this.pallete = [];
-    for (const p of pallete) {
-      this.pallete.push(await this.check(p));
+    for (const p of Object.keys(pallete)) {
+      this.pallete.push({
+        name: p,
+        label: pallete[p],
+        type: await this.check(p),
+      });
     }
     return this.goal;
   }
@@ -110,10 +122,7 @@ export const Session = class {
     this.writeStdin(`Check (${x}).`);
     const y = await this.getStdoutValue();
     const z = y.split('\n');
-    return {
-      name: z[0],
-      type: z.slice(1).join('\n').trim().slice(2),
-    };
+    return z.slice(1).join('\n').trim().slice(2);
   }
 
   async search(x) {

@@ -1,8 +1,20 @@
 let state = 'drag';
 let draggedItem = {};
 let dragHandler = () => {};
-
+let shiftHolded = false;
 const dom = document.getElementById('drag-label');
+
+document.onkeydown = (e) => {
+  if (e.key === 'Shift') {
+    shiftHolded = true;
+  }
+};
+
+document.onkeyup = (e) => {
+  if (e.key === 'Shift') {
+    shiftHolded = false;
+  }
+};
 
 export const dragOnClick = (e) => () => {
   if (state === 'drag') {
@@ -12,7 +24,7 @@ export const dragOnClick = (e) => () => {
   } else {
     state = 'drag';
     dom.innerText = '';
-    dragHandler(draggedItem, e);
+    dragHandler(draggedItem, e, shiftHolded);
   }
 };
 

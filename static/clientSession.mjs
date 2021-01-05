@@ -20,16 +20,18 @@ export const Session = class {
     this.token = '';
     this.goal = {};
     this.pallete = [];
+    this.problem = 0;
     this.dom = {
       state: document.getElementById('state'),
       pallete: document.getElementById('pallete'),
+      statement: document.getElementById('statement'),
     };
   }
 
   refreshGoal() {
     if (this.goal.finished) {
-      alert('جناب مبارکه. اثبات تموم شد. صفحه ریلود می شه.');
-      window.location.reload();
+      alert('جناب مبارکه. اثبات تموم شد. می ریم مرحله بعدی.');
+      window.location = `/?l=${this.problem + 1}`;
     }
     const d = this.dom.state;
     while (d.childNodes.length) d.removeChild(d.lastChild);
@@ -74,7 +76,7 @@ export const Session = class {
   refreshPallete() {
     for (const p of this.pallete) {
       const c = document.createElement('button');
-      c.innerText = p.name;
+      c.innerText = p.label;
       c.title = p.type;
       c.onclick = dragOnClick({ type: 'lem', name: p.name });
       this.dom.pallete.appendChild(c);
@@ -82,10 +84,16 @@ export const Session = class {
   }
 
   async init(problem) {
-    const { goal, token, pallete } = await ftc({ type: "create", problem });
+    const { 
+      goal, token, pallete, statement,
+    } = await ftc({ type: "create", problem });
     this.goal = goal;
     this.token = token;
     this.pallete = pallete;
+    this.problem = problem;
+    this.statement = statement;
+    this.dom.statement.innerText = statement;
+    console.log(this);
     this.refreshGoal();
     this.refreshPallete();
   }
