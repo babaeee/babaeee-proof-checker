@@ -5,3 +5,4 @@ How to install:
 * install nodejs
 * clone the repo
 * npm install
+* run the index.html
