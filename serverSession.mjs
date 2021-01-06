@@ -98,7 +98,7 @@ export const Session = class {
     }
   };
 
-  async setGoal({ pallete = {}, goal, context, statement }) {
+  async setGoal({ pallete = {}, goal, context, statement, tools = {} }) {
     await this.cleanCache();
     await this.writeStdin(context);
     await this.cleanCache(5000);
@@ -107,6 +107,14 @@ export const Session = class {
     await this.sendTactic('normalize');
     this.statement = statement;
     this.pallete = [];
+    this.tools = (() => {
+      const {
+        auto = 'enable',
+        rewrite = 'enable',
+        assert = 'enable',
+      } = tools;
+      return { auto, rewrite, assert };
+    })();
     for (const p of Object.keys(pallete)) {
       this.pallete.push({
         name: p,

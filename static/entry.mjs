@@ -9,20 +9,17 @@ const startSession = async () => {
   await session.init(isNaN(problem) ? 0 : problem);
 };
 
-document.getElementById('rg-button').onclick = async () => {
-  const f = document.getElementById('rg-box').value;
-  await session.sendTactic(`replace_goal (${f})`);
-};
-
 registerDragHandler(async (drag, drop, shift) => {
-  if (drop.type === 'goal') {
+  const tool = document.querySelector('input[name="tool"]:checked').value;
+  if (drop.type === 'goal' || drop.type === 'hyp') {
+    const inFolan = drop.type === 'goal' ? '' : `in ${drop.name}`;
     if (drag.type === 'hyp' || drag.type === 'lem') {
       if (shift) {
         const f = window.prompt('با چه پارامتر هایی اعمال کنم؟');
-        await session.sendTactic(`apply ${drag.name} with (${f})`);
+        await session.sendTactic(`${tool} ${drag.name} with (${f}) ${inFolan}`);
       }
       else {
-        await session.sendTactic(`apply ${drag.name}`);
+        await session.sendTactic(`${tool} ${drag.name} ${inFolan}`);
       }
       return;
     }
@@ -32,6 +29,16 @@ registerDragHandler(async (drag, drop, shift) => {
 
 startSession();
 
-document.getElementById('auto-proof').onclick = () => {
+document.getElementById('tool-auto-button').onclick = () => {
   session.sendTactic('kalbas_auto');
-}
+};
+
+document.getElementById('tool-undo-button').onclick = () => {
+  session.sendTactic('Back');
+};
+
+
+document.getElementById('tool-assert-button').onclick = async () => {
+  const f = window.prompt('گزاره ادعایی رو وارد کنید');
+  await session.sendTactic(`assert (${f})`);
+};

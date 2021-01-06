@@ -74,6 +74,9 @@ export const Session = class {
   }
 
   refreshPallete() {
+    if (this.pallete.length != 0) {
+      document.getElementById('pallete-div').style.display = 'block';
+    }
     for (const p of this.pallete) {
       const c = document.createElement('button');
       c.innerText = p.label;
@@ -83,17 +86,33 @@ export const Session = class {
     }
   }
 
+  refreshTools() {
+    document.getElementById('tool-div').style.display = 'block';
+    const { rewrite, auto, assert } = this.tools;
+    const off = (id) => {
+      document.getElementById(id).style.display = 'none';
+    };
+    if (rewrite === 'disable') {
+      off('tool-rewrite');
+      off('tool-rewrite-label');
+    }
+    if (auto === 'disable') off('tool-auto-button');
+    if (assert === 'disable') off('tool-assert-button');
+  }
+
   async init(problem) {
     const { 
-      goal, token, pallete, statement,
+      goal, token, pallete, statement, tools,
     } = await ftc({ type: "create", problem });
     this.goal = goal;
     this.token = token;
     this.pallete = pallete;
     this.problem = problem;
-    this.statement = statement;
-    this.dom.statement.innerText = statement;
+    this.tools = tools;
+    this.statement = statement.replace(/\n\n/g, '#x#').replace(/\n/g, ' ').replace(/#x#/g, '\n'); 
+    this.dom.statement.innerText = this.statement;
     console.log(this);
+    this.refreshTools();
     this.refreshGoal();
     this.refreshPallete();
   }

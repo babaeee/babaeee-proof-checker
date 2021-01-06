@@ -10,7 +10,10 @@ export const createSession = async (pn) => {
   const goal = await x.setGoal(problems[pn]);
   store.set(token, x);
   console.log(`Session ${token} started`);
-  return { token, goal, pallete: x.pallete, statement: x.statement };
+  return {
+    tools: x.tools,
+    token, goal, pallete: x.pallete, statement: x.statement,
+  };
 };
 
 /**

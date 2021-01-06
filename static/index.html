@@ -7,32 +7,23 @@
     <p id="statement"></p>
     <span id="drag-label"></span>
     <span id="wait-label"></span>
-    <div>
+    <div id="pallete-div" style="display: none;">
       <h2>پالت قضیه ها</h2>
       <div id="pallete"></div>
     </div>
-    <div>
+    <div id="tool-div" style="display:none">
       <h2>ابزار ها</h2>
-      <button id="auto-proof">اثبات خودکار</button>
+      <input type="radio" id="tool-apply" name="tool" value="apply" checked="checked">
+      <label id="tool-apply-label" for="tool-apply">اعمال کردن</label>
+      <input type="radio" id="tool-rewrite" name="tool" value="rewrite">
+      <label id="tool-rewrite-label" for="tool-rewrite">بازنویسی کردن</label>
+      <button id="tool-undo-button">آندو</button>
+      <button id="tool-auto-button">اثبات خودکار</button>
+      <button id="tool-assert-button">ادعای جدید</button>
     </div>
     <div>
       <h2>وضعیت</h2>
       <div dir="ltr" id="state"></div>
-      گزاره کمکی: 
-      <input id="rg-box" type="text" dir="ltr">
-      <button id="rg-button">هدف رو جایگزین کن</button>
-      <p>
-        <b>راهنما:</b>
-        توی این کادر یه گزاره ای بنویس که اثباتش از گزاره اصلی ساده تر باشه و
-        گزاره اصلی رو نتیجه بده. وقتی نوشتی و دکمه رو زدی، ما اول ازت می خوایم
-        که ثابتش کنی و بعد که ثابت کردی ازت می پرسیم که چجوری می شه باهاش گزاره
-        اصلی رو ثابت کرد. هر قسمتی هم که بدیهی باشه خودمون هندل می کنیم و مزاحمت
-        نمی شیم. 🙂
-      </p>
-      <h2>جستجو</h2>
-      <input id="search-box" type="text">
-      <button id="search-button">بسرچ</button>
-      <div id="search"></div>
     </div>
     <script type="module" src="entry.mjs"></script>
   </body>
