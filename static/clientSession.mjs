@@ -11,7 +11,15 @@ const ftc = async (body) => {
     body: JSON.stringify(body),
   });
   waitingLabel.innerText = '';
-  return res.json();
+  const r =  res.json();
+  if (!r.ok) {
+    if (r.type === 'server fault') {
+      alert(`سرور پکید. این رو گزارش کنید. صفحه رو ریلود کنید.
+      این رو هم کپی کنید:
+      ${e}
+      `);
+    }
+  }
 };
 
 export const Session = class {

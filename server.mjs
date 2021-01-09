@@ -7,25 +7,33 @@ const app = express();
 app.use(bodyParser.json());
 app.use(express.static(projectRoot + '/static'));
 app.post('/api', async (req, res) => {
-  const { type } = req.body;
-  console.log(req.body);
-  if (type === 'create') {
+  try {
+    const { type } = req.body;
+    console.log(req.body);
+    if (type === 'create') {
+      res.json({
+        ok: true,
+        ...await createSession(req.body.problem),
+      });
+      return;
+    }
+    const { token } = req.body;
+    const session = getSession(token);
+    if (type === 'sendTactic') {
+      res.json({
+        ok: true,
+        ...await session.sendTactic(req.body.tac),
+      });
+      return;
+    }
+    res.json({ ok: false });
+  } catch(e) {
     res.json({
-      ok: true,
-      ...await createSession(req.body.problem),
+      ok: false,
+      type: 'server fault',
+      error: e,
     });
-    return;
   }
-  const { token } = req.body;
-  const session = getSession(token);
-  if (type === 'sendTactic') {
-    res.json({
-      ok: true,
-      ...await session.sendTactic(req.body.tac),
-    });
-    return;
-  }
-  res.json({ ok: false });
 });
 
 app.listen(8080);
