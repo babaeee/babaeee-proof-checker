@@ -54,30 +54,38 @@ export const Session = class {
       throw new Error(err);
     }
     console.log(so);
-    const y = so.split('\n').map((a)=>a.trim());
+    const y = so.split('\n');
     const hyps = [];
-    const goals = [];
+    const goals = [''];
     let mode = 'hyp';
     for (const x of y) {
-      if (x.startsWith('No more subgoal')) {
+      const xt = x.trim();
+      if (xt.startsWith('No more subgoal')) {
         this.goal = { goals: [], hyps: [], finished: true };
         return;
       }
-      if (x.endsWith('subgoal') || x.endsWith('subgoals')) continue;
-      if (x == '') continue;
-      if (x.endsWith('======')) {
+      if (xt.endsWith('subgoal') || xt.endsWith('subgoals')) continue;
+      if (xt == '') continue;
+      if (xt.endsWith('======')) {
         mode = 'goal';
         continue;
       }
       if (mode === 'hyp') {
-        const sx = x.split(' : ');
-        hyps.push({
-          name: sx[0].split(', '),
-          type: sx.slice(1).join(' : '),
-        });
+        if (x[2] !== ' ') {
+          const sx = xt.split(' : ');
+          hyps.push({
+            name: sx[0].split(', '),
+            type: sx.slice(1).join(' : '),
+          });
+        } else {
+          hyps[hyps.length-1].type += ` ${xt}`;
+        }
       } else {
-        if (x.endsWith(' is:')) continue;
-        goals.push(x);
+        if (xt.endsWith(' is:')){
+          goals.push('');
+          continue;
+        }
+        goals[goals.length - 1] += xt;
       }
     }
     this.goal = { hyps, goals };
@@ -85,6 +93,7 @@ export const Session = class {
   }
 
   async sendTactic(tac) {
+    console.log(`tactic = ${tac}`);
     await this.cleanCache();
     this.writeStdin(`${tac}.`);
     try {
@@ -112,8 +121,10 @@ export const Session = class {
         auto = 'enable',
         rewrite = 'enable',
         assert = 'enable',
+        replace = 'enable',
+        custom = 'disable',
       } = tools;
-      return { auto, rewrite, assert };
+      return { auto, rewrite, assert, replace, custom };
     })();
     for (const p of Object.keys(pallete)) {
       this.pallete.push({

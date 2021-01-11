@@ -1,6 +1,7 @@
 let state = 'drag';
 let draggedItem = {};
-let dragHandler = () => {};
+let dropHandler = () => {};
+let clickHandler = () => { return false };
 let shiftHolded = false;
 const dom = document.getElementById('drag-label');
 
@@ -16,9 +17,13 @@ document.onkeyup = (e) => {
   }
 };
 
-export const dragOnClick = (e) => () => {
+export const dragOnClick = (e) => async () => {
   if (state === 'drag') {
     draggedItem = e;
+    if (await clickHandler(e, shiftHolded)) {
+      shiftHolded = false;
+      return;
+    }
     dom.innerText = 'مثلا درگ کردی. حالا یه جا کلیک کن تا دراپ شه.';
     state = 'drop';
   } else {
@@ -26,10 +31,14 @@ export const dragOnClick = (e) => () => {
     dom.innerText = '';
     const sh = shiftHolded;
     shiftHolded = false;
-    dragHandler(draggedItem, e, sh);
+    dropHandler(draggedItem, e, sh);
   }
 };
 
-export const registerDragHandler = (f) => {
-  dragHandler = f;  
+export const registerClickHandler = (f) => {
+  clickHandler = f;  
+};
+
+export const registerDropHandler = (f) => {
+  dropHandler = f;  
 };

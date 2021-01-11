@@ -11,15 +11,16 @@ const ftc = async (body) => {
     body: JSON.stringify(body),
   });
   waitingLabel.innerText = '';
-  const r =  res.json();
+  const r = await res.json();
   if (!r.ok) {
     if (r.type === 'server fault') {
       alert(`سرور پکید. این رو گزارش کنید. صفحه رو ریلود کنید.
       این رو هم کپی کنید:
-      ${e}
+      ${r.error}
       `);
     }
   }
+  return r;
 };
 
 export const Session = class {
@@ -29,6 +30,7 @@ export const Session = class {
     this.goal = {};
     this.pallete = [];
     this.problem = 0;
+    this.course = 'basic';
     this.dom = {
       state: document.getElementById('state'),
       pallete: document.getElementById('pallete'),
@@ -39,7 +41,7 @@ export const Session = class {
   refreshGoal() {
     if (this.goal.finished) {
       alert('جناب مبارکه. اثبات تموم شد. می ریم مرحله بعدی.');
-      window.location = `/?l=${this.problem + 1}`;
+      window.location = `/?c=${this.course}&l=${this.problem + 1}`;
     }
     const d = this.dom.state;
     while (d.childNodes.length) d.removeChild(d.lastChild);
@@ -96,26 +98,37 @@ export const Session = class {
 
   refreshTools() {
     document.getElementById('tool-div').style.display = 'block';
-    const { rewrite, auto, assert } = this.tools;
+    const {
+      rewrite, auto, assert, replace, custom, destruct
+    } = this.tools;
     const off = (id) => {
       document.getElementById(id).style.display = 'none';
     };
-    if (rewrite === 'disable') {
-      off('tool-rewrite');
-      off('tool-rewrite-label');
-    }
+    const offL = (id) => {
+      off(`tool-${id}`);
+      off(`tool-${id}-label`);
+    };
+    if (rewrite === 'disable') offL('rewrite');
+    if (replace === 'disable') offL('replace');
+    if (destruct === 'disable') offL('destruct');
     if (auto === 'disable') off('tool-auto-button');
     if (assert === 'disable') off('tool-assert-button');
+    if (custom === 'disable') off('tool-custom-button');
   }
 
-  async init(problem) {
+  async init(course, problem) {
     const { 
-      goal, token, pallete, statement, tools,
-    } = await ftc({ type: "create", problem });
+      goal, token, pallete, statement, tools, ok,
+    } = await ftc({ type: "create", course, problem });
+    if (!ok) {
+      alert('مرحله مورد نظر یافت نشد. یا لینک اشتباه است یا مراحل تمام شده. در هر صورت این صفحه را ببندید.');
+      return;
+    }
     this.goal = goal;
     this.token = token;
     this.pallete = pallete;
     this.problem = problem;
+    this.course = course;
     this.tools = tools;
     this.statement = statement.replace(/\n\n/g, '#x#').replace(/\n/g, ' ').replace(/#x#/g, '\n'); 
     this.dom.statement.innerText = this.statement;

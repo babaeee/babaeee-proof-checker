@@ -9,12 +9,8 @@ app.use(express.static(projectRoot + '/static'));
 app.post('/api', async (req, res) => {
   try {
     const { type } = req.body;
-    console.log(req.body);
     if (type === 'create') {
-      res.json({
-        ok: true,
-        ...await createSession(req.body.problem),
-      });
+      res.json(await createSession(req.body.course, req.body.problem));
       return;
     }
     const { token } = req.body;
@@ -28,12 +24,13 @@ app.post('/api', async (req, res) => {
     }
     res.json({ ok: false });
   } catch(e) {
+    console.log(e);
     res.json({
       ok: false,
       type: 'server fault',
-      error: e,
+      error: e.stack,
     });
   }
 });
 
-app.listen(8080);
+app.listen(32210);

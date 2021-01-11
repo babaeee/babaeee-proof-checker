@@ -1,17 +1,23 @@
 import { randomBytes } from "crypto";
-import { problems } from "./problems.mjs";
+import { problems } from "./problems/index.mjs";
 import { Session } from "./serverSession.mjs";
 
 const store = new Map();
 
-export const createSession = async (pn) => {
+export const createSession = async (course, pn) => {
   const token = randomBytes(18).toString('base64');
   const x = new Session();
-  const goal = await x.setGoal(problems[pn]);
+  if (problems[course][pn] === undefined) {
+    return {
+      ok: false,
+      reason: 'bad level',
+    };
+  }
+  const goal = await x.setGoal(problems[course][pn]);
   store.set(token, x);
   console.log(`Session ${token} started`);
   return {
-    tools: x.tools,
+    ok: true, tools: x.tools,
     token, goal, pallete: x.pallete, statement: x.statement,
   };
 };
