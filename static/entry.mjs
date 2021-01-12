@@ -3,8 +3,6 @@ import { registerDropHandler, registerClickHandler } from "./dragndrop.mjs";
 
 let session;
 
-let ending = '; normalize';
-
 const startSession = async () => {
   session = new Session();
   const sp = window.location.search.split('&');
@@ -19,12 +17,15 @@ registerClickHandler(async (item) => {
   if (tool === 'replace') {
     const f = window.prompt('چی باید پیدا شه؟');
     const r = window.prompt('چی باید بره جاش؟');
-    await session.sendTactic(`replace (${f}) with (${r}) ${inFolan} ${ending}`);
+    await session.sendTactic(`replace (${f}) with (${r}) ${inFolan}`);
     return true;
   }
-  if (tool === 'destruct') {
+  if (tool === 'destruct' || tool === 'revert') {
     if (item.type === 'hyp') {
-      await session.sendTactic(`destruct ${item.name} ${ending}`);
+      await session.sendTactic(`${tool} ${item.name}`);
+      return true;
+    } else {
+      alert('این کار روی هدف قابل انجام نیست');
       return true;
     }
   }
@@ -34,7 +35,7 @@ registerClickHandler(async (item) => {
 registerDropHandler(async (drag, drop, shift) => {
   const tool = document.querySelector('input[name="tool"]:checked').value;
   if (drop.type === 'goal' || drop.type === 'hyp') {
-    const inFolan = drop.type === 'goal' ? ending : `in ${drop.name} ${ending}`;
+    const inFolan = drop.type === 'goal' ? '' : `in ${drop.name}`;
     if (drag.type === 'hyp' || drag.type === 'lem') {
       if (shift) {
         const f = window.prompt('با چه پارامتر هایی اعمال کنم؟');
@@ -62,10 +63,16 @@ document.getElementById('tool-undo-button').onclick = () => {
 
 document.getElementById('tool-assert-button').onclick = async () => {
   const f = window.prompt('گزاره ادعایی رو وارد کنید');
-  await session.sendTactic(`assert (${f}) ${ending}`);
+  await session.sendTactic(`assert (${f})`);
+};
+
+document.getElementById('tool-remember-button').onclick = async () => {
+  const name = window.prompt('اسمش چی باشه؟');
+  const value = window.prompt('مقدارش چی باشه؟');
+  await session.sendTactic(`remember (${value}) as ${name}`);
 };
 
 document.getElementById('tool-custom-button').onclick = async () => {
   const f = window.prompt('تاکتیک کاستوم را وارد کنید');
-  await session.sendTactic(`${f} ${ending}`);
+  await session.sendTactic(`${f}`);
 };

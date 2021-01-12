@@ -31,6 +31,7 @@ export const Session = class {
     this.pallete = [];
     this.problem = 0;
     this.course = 'basic';
+    this.ending = '; normalize';
     this.dom = {
       state: document.getElementById('state'),
       pallete: document.getElementById('pallete'),
@@ -99,7 +100,8 @@ export const Session = class {
   refreshTools() {
     document.getElementById('tool-div').style.display = 'block';
     const {
-      rewrite, auto, assert, replace, custom, destruct
+      rewrite, auto, assert, replace, custom, destruct, revert,
+      remember,
     } = this.tools;
     const off = (id) => {
       document.getElementById(id).style.display = 'none';
@@ -111,8 +113,10 @@ export const Session = class {
     if (rewrite === 'disable') offL('rewrite');
     if (replace === 'disable') offL('replace');
     if (destruct === 'disable') offL('destruct');
+    if (revert === 'disable') offL('revert');
     if (auto === 'disable') off('tool-auto-button');
     if (assert === 'disable') off('tool-assert-button');
+    if (remember === 'disable') off('tool-remember-button');
     if (custom === 'disable') off('tool-custom-button');
   }
 
@@ -139,7 +143,11 @@ export const Session = class {
   }
 
   async sendTactic(tac) {
-    const { ok, reason, goal } = await ftc({ token: this.token, type: 'sendTactic', tac });
+    const withEnding = !tac.startsWith('revert') && !tac.startsWith('Back');
+    const e = withEnding ? this.ending : '';
+    const { ok, reason, goal } = await ftc({
+      token: this.token, type: 'sendTactic', tac: tac + e
+    });
     if (ok) {
       this.goal = goal;
       this.refreshGoal();

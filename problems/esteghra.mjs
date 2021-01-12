@@ -28,6 +28,48 @@ Proof.
 Qed.
 `;
 
+const listContext = `
+${baseContext}
+
+Require Import List.
+Import ListNotations.
+Open Scope list_scope.
+
+
+Lemma list_length_zero: forall l: list nat, 0 = length l -> l = [].
+Proof.
+  intros.
+  destruct l; auto.
+  simpl in H.
+  omega.
+Qed.
+
+Lemma list_length_plus_one: forall l: list nat,
+forall a: nat, a + 1 = length l
+-> exists t: list nat, exists k: nat, l = [k] ++ t /\\ a = length t.
+Proof.
+  intros.
+  destruct l.
+  simpl in H; omega.
+  exists l.
+  exists n.
+  constructor; auto.
+  simpl in H.
+  omega.
+Qed.
+
+Lemma list_rev_def: forall (l: list nat) (a: nat), rev ([a]++l) = rev l ++ [a].
+Proof.
+  intros.
+  auto.
+Qed.
+
+Lemma rev_nil: ((rev []):list nat) = [].
+Proof.
+  auto.
+Qed.
+`;
+
 const s = [
 `
 این تمرین های استقرای اثبات چک کنه. هدف این جا یاد دادن نیست (اگرچه به نظرم
@@ -94,10 +136,22 @@ n:=x
 درسته.
 `,
 `
+دیگه کار کم کم داره جدی می شه. توی این سوال باید یه گزاره راجع به لیست ها رو
+ثابت کنی. برای این که دستت راه بیفته این سوال رو مراحلش رو می گم. باید روی
+طول لیست استقرا بزنی. یه متغیر جدید تعریف کن برابر طول لیست اول. بعد گزاره
+برابریش و خود لیست اول رو با ابزار برگرداندن، برگردون توی حکم و بعدش
+روی اون متغیری که تعریف کردی استقرا بزن. البته این رو هم امتحان کن که اگه
+برنگردونی توی حکم چه اتفاقی میفته تا متوجه بشی که چرا باید برگردونی توی حکم. اگه
+این رو درست یاد نگیری توی مراحل بعدی گیر می کنی و نمی تونی اون استقرایی که توی
+ذهنته رو پیاده سازی کنی.
+`,
+`
 توی
 این سوال شما باید استقرای قوی رو ثابت کنید. اهمیت استقرای قوی به این دلیله که
 توی گام فرض قوی تری وجود داره که می تونه اثبات گام رو راحت تر کنه. همچنین
 اثبات تعمیم های استقرا قدرت استقرا رو نشون میده.
+
+این سوال واقعا خفن و ایده داره. باید فکر کنید تا بتونید حل کنید.
 `,
 ];
 
@@ -129,5 +183,29 @@ export const problems = [
     },
     goal: `forall P: nat-> Prop, forall k: nat, P k
     ->(forall x: nat, P x -> P (x+1)) -> forall n: nat, k <= n -> P n`,
+  },
+  {
+    context: listContext,
+    statement: s[3],
+    pallete: {
+      'esteghra': 'استقرا',
+      'list_length_zero': 'لیست با طول صفر',
+      'list_length_plus_one': 'لیست با طول x+1',
+      'list_rev_def': 'تعریف معکوس لیست',
+      'app_assoc_reverse': 'شرکت پذیری چسباندن',
+      'app_nil_l': 'چسباندن به خالی از چپ',
+      'app_nil_r': 'چسباندن به خالی از راست',
+    },
+    goal: `forall l1 l2: list nat, rev (l1 ++ l2) = rev l2 ++ rev l1`,
+  },
+  {
+    context: baseContext,
+    statement: s[4],
+    pallete: {
+      'esteghra': 'استقرا',
+    },
+    goal: `forall P: nat -> Prop,
+    (forall x: nat, (forall y: nat, y < x -> P y) -> P x)
+    -> forall n: nat, P n`,
   },
 ]

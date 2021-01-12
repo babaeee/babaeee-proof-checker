@@ -118,13 +118,11 @@ export const Session = class {
     this.pallete = [];
     this.tools = (() => {
       const {
-        auto = 'enable',
-        rewrite = 'enable',
-        assert = 'enable',
-        replace = 'enable',
-        custom = 'disable',
+        auto = 'enable', rewrite = 'enable', assert = 'enable',
+        replace = 'enable', custom = 'disable', revert = 'enable',
+        remember = 'enable',
       } = tools;
-      return { auto, rewrite, assert, replace, custom };
+      return { auto, rewrite, assert, replace, custom, revert, remember };
     })();
     for (const p of Object.keys(pallete)) {
       this.pallete.push({
