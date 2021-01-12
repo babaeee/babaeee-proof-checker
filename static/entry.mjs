@@ -38,8 +38,9 @@ registerDropHandler(async (drag, drop, shift) => {
     const inFolan = drop.type === 'goal' ? '' : `in ${drop.name}`;
     if (drag.type === 'hyp' || drag.type === 'lem') {
       if (shift) {
-        const f = window.prompt('با چه پارامتر هایی اعمال کنم؟');
-        await session.sendTactic(`${tool} ${drag.name} with (${f}) ${inFolan}`);
+        const f = window.prompt('با چه پارامتر هایی اعمال کنم؟ (چند پارامتر رو با ویرگول جدا کنید)');
+        const w = f.split(',').map((x)=>`(${x})`).join(' ');
+        await session.sendTactic(`${tool} ${drag.name} with ${w} ${inFolan}`);
       }
       else {
         await session.sendTactic(`${tool} ${drag.name} ${inFolan}`);

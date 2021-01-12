@@ -14,11 +14,6 @@ Proof.
 Qed.
 `;
 
-const kambizContext = `
-${baseContext}
-Variable kambiz: nat -> nat -> Prop.
-`;
-
 const nonZContext = `
 ${baseContext}
 Lemma exist_minus: forall x y : nat, x <= y -> exists z, y = x + z.
@@ -68,6 +63,30 @@ Lemma rev_nil: ((rev []):list nat) = [].
 Proof.
   auto.
 Qed.
+`;
+
+const fullContext = `
+${baseContext}
+Lemma esteghra_non0: forall P: nat-> Prop, forall k: nat, P k
+->(forall x: nat, P x -> P (x+1)) -> forall n: nat, k <= n -> P n.
+Proof.
+  intros.
+  assert (exists f: nat, k + f = n).
+  exists (n-k); kalbas_auto.
+  destruct H2.
+  destruct H2.
+  apply nat_ind with (n:=x).
+  replace (k+0) with k; kalbas_auto.
+  intros.
+  replace (k+S n) with ( (k+n) + 1); try omega.
+  apply H0.
+  auto.
+Qed.
+`;
+
+const kambizContext = `
+${fullContext}
+Variable kambiz: nat -> nat -> Prop.
 `;
 
 const s = [
@@ -136,6 +155,10 @@ n:=x
 درسته.
 `,
 `
+حالا با اون استقرایی که الان ثابتش کردی، یه تیکه دیگه از مساله کامبیز رو باید
+ثابت کنی.
+`,
+`
 دیگه کار کم کم داره جدی می شه. توی این سوال باید یه گزاره راجع به لیست ها رو
 ثابت کنی. برای این که دستت راه بیفته این سوال رو مراحلش رو می گم. باید روی
 طول لیست استقرا بزنی. یه متغیر جدید تعریف کن برابر طول لیست اول. بعد گزاره
@@ -185,8 +208,21 @@ export const problems = [
     ->(forall x: nat, P x -> P (x+1)) -> forall n: nat, k <= n -> P n`,
   },
   {
-    context: listContext,
+    context: kambizContext,
     statement: s[3],
+    pallete: {
+      'esteghra': 'استقرا',
+      'esteghra_non0': 'استقرا با پایه ناصفر',
+    },
+    tools: { custom: 'enable' },
+    goal: `kambiz 1 1
+    ->(forall tool gam: nat , kambiz tool gam -> kambiz (tool+2*gam) (2*gam))
+    ->(forall tool gam: nat , kambiz tool (2*gam) -> kambiz (tool+gam) (gam))
+    -> forall n: nat, 1 <= n -> exists k: nat, kambiz (3*n) k`,
+  },
+  {
+    context: listContext,
+    statement: s[4],
     pallete: {
       'esteghra': 'استقرا',
       'list_length_zero': 'لیست با طول صفر',
@@ -200,7 +236,7 @@ export const problems = [
   },
   {
     context: baseContext,
-    statement: s[4],
+    statement: s[5],
     pallete: {
       'esteghra': 'استقرا',
     },
