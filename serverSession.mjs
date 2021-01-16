@@ -120,9 +120,12 @@ export const Session = class {
       const {
         auto = 'enable', rewrite = 'enable', assert = 'enable',
         replace = 'enable', custom = 'disable', revert = 'enable',
-        remember = 'enable',
+        remember = 'enable', destruct = 'enable',
       } = tools;
-      return { auto, rewrite, assert, replace, custom, revert, remember };
+      return {
+        auto, rewrite, assert, replace, custom, revert, remember,
+        destruct,
+      };
     })();
     for (const p of Object.keys(pallete)) {
       this.pallete.push({

@@ -226,13 +226,27 @@ nat
 
 به این نکته دقت کن که مثل اعمال کردن، فرض ها و قضیه ها رو می تونی توی هم دیگه هم
 باز نویسی کنی.
-هم چنین این جا اثبات خودکار واقعا خودکار رو برات باز می کنیم ولی تاکید می کنیم که
-هر جایی که نفهمیدی دقیقا چه اتفاقی افتاد غیر فعالش کن و دستی ازش استفاده کن.
+هم چنین این جا جایگزینی رو برات باز می کنیم که یه جور ترکیب ادعا و بازنویسیه. انتخابش
+کن و بعدش روی هدف کلیک کن، ازت می پرسه که چی رو می خوای با چی جایگزین کنی و بعدش
+حکم رو با توجه به اون تغییر می ده.
+`,
 `
-]
+حالا با ابزار خیلی مهم تجزیه آشنا می شیم. تجزیه هر چیزی رو می شکونه به ماهیتش. خیلی
+دقیق نمی شه توضیحش داد وقتی که زیرساخت کوک رو ندونیم ولی مهم نیست. با چند تا مثال
+کاربرد های اصلی این ابزار رو یاد می گیریم.
+
+اولین کاربردش، شکوندن «و منطقی» رو ببینید. ما این جا یه فرض داریم که و منطقی دو تا
+گزارست. اون رو با ابزار تجزیه بشکنید، می بینید که به دو تا فرض مجزا تبدیل می شه. حالا
+حکم رو می تونید ثابت کنید.
+`,
+];
 
 const noTool = {
   rewrite: 'disable',
+  destruct: 'disable',
+  replace: 'disable',
+  revert: 'disable',
+  remember: 'disable',
   auto: 'disable',
   assert: 'disable',
 };
@@ -252,9 +266,14 @@ const andAssert = {
   assert: 'enable',
 }
 
-const andAutoAuto = {
+const andReplace = {
   ...andAssert,
-  auto: 'enable',
+  replace: 'enable',
+};
+
+const andDestruct = {
+  ...andReplace,
+  destruct: 'enable',
 };
 
 export const problems = [
@@ -354,8 +373,14 @@ export const problems = [
       'Nat.pow_inj_r': 'یک به یک بودن توان با پایه ثابت',
       'Nat.pow_inj_l': 'یک به یک بودن توان با نمای ثابت',
     },
-    tools: andAutoAuto,
+    tools: andReplace,
     goal: 'forall a : nat, 2 ^ (a + 3) = 256 -> a = 5',
+  },
+  {
+    context: arithContext,
+    statement: s[11],
+    tools: andDestruct,
+    goal: 'forall A B C : Prop, A /\\ (A -> B) /\\ (B -> C) -> C',
   },
   {
     context: hesabiContext,
